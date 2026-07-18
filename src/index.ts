@@ -1,4 +1,19 @@
-import type { User, Course, Submission } from "../types/index";
+import {
+  SubmissionStatus,
+  Role
+} from "../types/index";
+
+import type {
+  User,
+  Course,
+  Submission,
+  StringOrNumber,
+  ApiResponse,
+  UserUpdate,
+  UserPreview,
+  PublicUser,
+  RoleCount
+} from "../types/index";
 
 // ===== PRIMITIVE TYPE ANNOTATIONS =====
 
@@ -62,7 +77,6 @@ console.log(student);
 console.log(course);
 
 // ===== TYPE NARROWING =====
-import type { StringOrNumber } from "../types/index";
 
 // Narrowing with typeof
 function processInput(input: StringOrNumber): string {
@@ -85,3 +99,88 @@ function formatDate(value: string | Date): string {
 console.log(processInput("hello"));
 console.log(processInput(3.14159));
 console.log(formatDate(new Date()));
+
+// ===== GENERIC FUNCTIONS =====
+
+// T is inferred automatically from whatever array you pass in
+function getFirst<T>(items: T[]): T | undefined {
+  return items[0];
+}
+
+// Constrained generic -- T must have an "id: number" field
+function getById<T extends { id: number }>(
+  items: T[],
+  id: number
+): T | undefined {
+  return items.find((item) => item.id === id);
+}
+
+// [student] is an array containing one element
+const firstUser = getFirst<User>([student]);
+const foundUser = getById<User>([student], 1);
+
+console.log(firstUser?.name);
+console.log(foundUser?.email);
+
+const userResponse: ApiResponse<User> = {
+  success: true,
+  data: student,
+};
+
+const courseResponse: ApiResponse<Course[]> = {
+  success: true,
+  data: [course],
+};
+
+console.log(userResponse.data.name);
+
+// ===== USING UTILITY TYPES =====
+
+// Partial<T> -- update payload only needs the changed fields
+const patch: UserUpdate = { name: "Juan D. Cruz" };
+
+// Pick<T,K> -- a lightweight preview object
+const preview: UserPreview = {
+  id: 1,
+  name: "Juan dela Cruz",
+  role: "student",
+};
+
+// Omit<T,K> -- safe to expose publicly
+const publicProfile: PublicUser = {
+  id: 1,
+  name: "Juan dela Cruz",
+  role: "student",
+};
+
+// Record<K,T> -- dashboard-style counts
+const roleCount: RoleCount = {
+  student: 45,
+  admin: 2,
+  instructor: 3,
+};
+
+// ===== ReturnType<T> =====
+function makeSubmission(courseCode: string) {
+  return {
+    id: 1,
+    studentId: 1,
+    courseCode,
+    submittedAt: new Date(),
+  };
+}
+
+type NewSubmission = ReturnType<typeof makeSubmission>;
+
+const gt1Submission: NewSubmission = makeSubmission("ITELECT4");
+
+// ===== USING ENUMS =====
+
+let status: SubmissionStatus = SubmissionStatus.Pending;
+console.log(SubmissionStatus[status]);
+
+status = SubmissionStatus.Graded;
+console.log(status === SubmissionStatus.Graded);
+
+const currentRole: Role = Role.Student;
+console.log(currentRole);
