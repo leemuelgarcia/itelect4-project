@@ -42,7 +42,7 @@ export type Formatter = (value: number) => string;
 
 // Using them
 const studentId: ID = "S2026-001";
-const position: Coordinate = { x: 10, y: 20 };
+export const position: Coordinate = { x: 10, y: 20 };
 const formatScore: Formatter = (value) => `${value}%`;
 
 console.log(studentId);
@@ -66,7 +66,7 @@ export type StudentWithCourse = User & {
   gpa: number;
 };
 
-const topStudent: StudentWithCourse = {
+export const topStudent: StudentWithCourse = {
   id: 1,
   name: "Maria Santos",
   email: "m@example.com",
@@ -115,7 +115,6 @@ export enum SubmissionStatus {
   Late,
 }
 
-// const enum -- inlined at compile time
 export const enum Role {
   Student = "student",
   Admin = "admin",
