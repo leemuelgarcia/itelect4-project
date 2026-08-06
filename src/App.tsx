@@ -2,12 +2,11 @@ import { useState, useEffect, useRef } from "react";
 
 import UserCard from "./components/UserCard";
 import CourseCard from "./components/CourseCard";
-import SubmissionBadge from "./components/SubmissionBadge";
 
 import { useToggle } from "./hooks/useToggle";
 import { usePrevious } from "./hooks/usePrevious";
 
-import type { User, Course, Submission } from "./types";
+import type { User, Course } from "./types";
 
 const student: User = {
   id: 1,
@@ -24,36 +23,25 @@ const course: Course = {
   semester: "1st Semester 2026-2027",
 };
 
-const submission: Submission = {
-  id: 1,
-  studentId: 1,
-  courseCode: "ITELECT4",
-  repoUrl: "github.com/juandc/itelect4-project",
-  submittedAt: new Date(),
-  score: 95,
-};
-
 function App() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [showSubmission, toggleSubmission] = useToggle(true);
+  const [showDetails, toggleDetails] = useToggle(false);
+  const [isDarkMode, toggleDarkMode] = useToggle(false);
 
   const previousSearch = usePrevious(searchTerm);
-
-  const focusSearch = (): void => {
-    searchInputRef.current?.focus();
-  };
 
   useEffect(() => {
     setTimeout(() => {
       setCourses([course]);
       setIsLoading(false);
-      focusSearch();
+      searchInputRef.current?.focus();
     }, 500);
   }, []);
 
@@ -63,51 +51,83 @@ function App() {
     setSearchTerm(e.target.value);
   };
 
-  const filteredCourses = courses.filter((c) =>
-    c.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCourses = courses.filter(
+    (c) =>
+      c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) {
-    return <p>Loading courses...</p>;
+    return (
+      <div className="animate-pulse p-6">
+        Loading...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="m-6 rounded-lg bg-red-50 p-4 text-red-700">
+        Could not load courses.
+      </div>
+    );
   }
 
   return (
-    <div className="app">
-      <input
-        ref={searchInputRef}
-        type="text"
-        placeholder="Search courses..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-      />
+    <div className={isDarkMode ? "dark" : ""}>
+      <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900">
+        <button
+          onClick={toggleDarkMode}
+          className="rounded bg-gray-800 px-3 py-1.5 text-sm text-white dark:bg-gray-200 dark:text-gray-900"
+        >
+          {isDarkMode ? "Light Mode" : "Dark Mode"}
+        </button>
 
-      <p>Previous search: {previousSearch ?? "None"}</p>
+        <button
+          onClick={() => setIsError(true)}
+          className="ml-2 rounded bg-red-100 px-2 py-1 text-xs text-red-700"
+        >
+          Simulate Error
+        </button>
 
-      <UserCard
-        user={student}
-        onSelect={(u) => setSelectedUser(u)}
-      />
-
-      {selectedUser && (
-        <p>Selected: {selectedUser.name}</p>
-      )}
-
-      {filteredCourses.map((course) => (
-        <CourseCard
-          key={course.code}
-          course={course}
+        <input
+          ref={searchInputRef}
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Search courses..."
+          className="mt-4 w-full rounded border p-2"
         />
-      ))}
 
-      <button onClick={toggleSubmission}>
-        Toggle Submission
-      </button>
+        {previousSearch !== undefined &&
+          previousSearch !== searchTerm && (
+            <p>
+              Previous search: "{previousSearch}"
+            </p>
+          )}
 
-      {showSubmission && (
-        <SubmissionBadge submission={submission}>
-          <p>On time!</p>
-        </SubmissionBadge>
-      )}
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <UserCard
+            user={student}
+            onSelect={setSelectedUser}
+          />
+
+          {selectedUser && (
+            <p>Selected: {selectedUser.name}</p>
+          )}
+
+          <button onClick={toggleDetails}>
+            {showDetails ? "Hide" : "Show"} Details
+          </button>
+
+          {filteredCourses.map((c) => (
+            <CourseCard
+              key={c.code}
+              course={c}
+              variant="compact"
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
