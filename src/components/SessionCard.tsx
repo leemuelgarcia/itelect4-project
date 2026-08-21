@@ -1,7 +1,7 @@
-import type { Session } from "../types";
+import type { ApiSession } from "../types";
 
 interface SessionCardProps {
-  session: Session;
+  session: ApiSession;
 }
 
 function SessionCard({ session }: SessionCardProps) {

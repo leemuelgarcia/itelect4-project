@@ -1,21 +1,34 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router";
 
+import type { ApiSession } from "../types";
 import SessionCard from "../components/SessionCard";
-import { allSessions, tutor } from "../data/mockData";
+import { fetchSessionById } from "../api/client";
+import { tutor } from "../data/mockData";
 
 function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
 
-  const session = allSessions.find(
-    (item) => item.id === Number(id)
-  );
+  const { data, isPending, isError, error } = useQuery<ApiSession>({
+    queryKey: ["sessions", id],
+    queryFn: () => fetchSessionById(id!),
+    enabled: id !== undefined,
+  });
 
-  if (!session) {
+  if (isPending) {
+    return (
+      <div className="animate-pulse p-6">
+        Loading tutoring session...
+      </div>
+    );
+  }
+
+  if (isError) {
     return (
       <div>
-        <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-          Session Not Found
-        </h2>
+        <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-700">
+          {error.message}
+        </div>
 
         <Link
           to="/sessions"
@@ -38,7 +51,7 @@ function SessionDetailPage() {
         </Link>
       </div>
 
-      <SessionCard session={session} />
+      <SessionCard session={data} />
 
       <div className="mt-6 rounded-lg bg-white p-5 shadow dark:bg-gray-800">
         <h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
