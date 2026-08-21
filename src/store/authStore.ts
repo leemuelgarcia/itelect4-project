@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface AuthState {
   token: string | null;
@@ -6,14 +7,24 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token: null,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      token: null,
 
-  login: (token) => {
-    set({ token });
-  },
+      login: (token) => {
+        set({ token });
+      },
 
-  logout: () => {
-    set({ token: null });
-  },
-}));
+      logout: () => {
+        set({ token: null });
+      },
+    }),
+    {
+      name: "itelect4-auth",
+      partialize: (state) => ({
+        token: state.token,
+      }),
+    }
+  )
+);

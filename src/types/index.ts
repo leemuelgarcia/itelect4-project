@@ -106,3 +106,14 @@ export type RoleCount = Record<"tutor" | "tutee", number>;
 // This works with the project's erasableSyntaxOnly configuration.
 
 export type BookingStatus = "requested" | "confirmed" | "completed";
+
+export type ApiSession = Omit<Session, "id"> & {
+  id: string;
+};
+
+export type ApiBooking = Omit<Booking, "id" | "bookedAt"> & {
+  id: string;
+  bookedAt: string;
+};
+
+export type NewBooking = Omit<ApiBooking, "id">;

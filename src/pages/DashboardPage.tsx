@@ -1,15 +1,65 @@
-import { allBookings, allSessions, tutee } from "../data/mockData";
+import { useQuery } from "@tanstack/react-query";
+
+import type {
+  ApiBooking,
+  ApiSession,
+} from "../types";
+import {
+  fetchBookings,
+  fetchSessions,
+} from "../api/client";
+import { tutee } from "../data/mockData";
 
 function DashboardPage() {
-  const requestedCount = allBookings.filter(
+  const sessionsQuery = useQuery<ApiSession[]>({
+    queryKey: ["sessions"],
+    queryFn: fetchSessions,
+  });
+
+  const bookingsQuery = useQuery<ApiBooking[]>({
+    queryKey: ["bookings"],
+    queryFn: fetchBookings,
+  });
+
+  if (sessionsQuery.isPending || bookingsQuery.isPending) {
+    return (
+      <div className="animate-pulse p-6">
+        Loading dashboard...
+      </div>
+    );
+  }
+
+  if (sessionsQuery.isError) {
+    return (
+      <div className="rounded-lg bg-red-50 p-4 text-red-700">
+        {sessionsQuery.error.message}
+      </div>
+    );
+  }
+
+  if (bookingsQuery.isError) {
+    return (
+      <div className="rounded-lg bg-red-50 p-4 text-red-700">
+        {bookingsQuery.error.message}
+      </div>
+    );
+  }
+
+  const sessions = sessionsQuery.data;
+
+  const bookings = bookingsQuery.data.filter(
+    (booking) => booking.tuteeId === tutee.id
+  );
+
+  const requestedCount = bookings.filter(
     (booking) => booking.status === "requested"
   ).length;
 
-  const confirmedCount = allBookings.filter(
+  const confirmedCount = bookings.filter(
     (booking) => booking.status === "confirmed"
   ).length;
 
-  const completedCount = allBookings.filter(
+  const completedCount = bookings.filter(
     (booking) => booking.status === "completed"
   ).length;
 
@@ -32,7 +82,7 @@ function DashboardPage() {
           </p>
 
           <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
-            {allSessions.length}
+            {sessions.length}
           </p>
         </div>
 
@@ -42,7 +92,7 @@ function DashboardPage() {
           </p>
 
           <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
-            {allBookings.length}
+            {bookings.length}
           </p>
         </div>
 
