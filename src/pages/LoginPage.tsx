@@ -3,12 +3,19 @@ import { useNavigate } from "react-router";
 
 import { useAuthStore } from "../store/authStore";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 function LoginPage() {
   const [name, setName] = useState("");
+
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = (
+    event: React.FormEvent<HTMLFormElement>
+  ): void => {
     event.preventDefault();
 
     if (!name.trim()) {
@@ -31,30 +38,32 @@ function LoginPage() {
         </p>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label
+          <div className="space-y-2">
+            <Label
               htmlFor="name"
-              className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+              className="text-gray-900 dark:text-white"
             >
               Name
-            </label>
+            </Label>
 
-            <input
+            <Input
               id="name"
               type="text"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) =>
+                setName(event.target.value)
+              }
               placeholder="Enter your name"
-              className="w-full rounded border px-3 py-2"
             />
           </div>
 
-          <button
+          <Button
             type="submit"
-            className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+            disabled={name.trim() === ""}
+            className="w-full"
           >
             Login
-          </button>
+          </Button>
         </form>
       </div>
     </div>

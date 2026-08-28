@@ -23,6 +23,7 @@ export interface Booking {
   tuteeId: number;
   status: "requested" | "confirmed" | "completed";
   bookedAt: Date;
+  learningGoal: string;
 }
 
 // ===== TYPE ALIASES =====

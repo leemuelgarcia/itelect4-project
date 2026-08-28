@@ -31,27 +31,31 @@
       "sessionId": 1,
       "tuteeId": 2,
       "status": "confirmed",
-      "bookedAt": "2026-08-20T09:00:00.000Z"
+      "bookedAt": "2026-08-20T09:00:00.000Z",
+      "learningGoal": "I want to understand the basics of web development."
     },
     {
       "id": "2",
       "sessionId": 2,
       "tuteeId": 2,
       "status": "requested",
-      "bookedAt": "2026-08-20T10:00:00.000Z"
+      "bookedAt": "2026-08-20T10:00:00.000Z",
+      "learningGoal": "I need help understanding TypeScript fundamentals."
     },
     {
       "id": "3",
       "sessionId": 3,
       "tuteeId": 2,
       "status": "completed",
-      "bookedAt": "2026-08-20T11:00:00.000Z"
+      "bookedAt": "2026-08-20T11:00:00.000Z",
+      "learningGoal": "I want to improve my understanding of React basics."
     },
     {
       "sessionId": 1,
       "tuteeId": 2,
       "status": "requested",
       "bookedAt": "2026-08-21T02:57:25.374Z",
+      "learningGoal": "I need guidance with HTML, CSS, and JavaScript.",
       "id": "aiOZUGMT-24"
     },
     {
@@ -59,7 +63,16 @@
       "tuteeId": 2,
       "status": "requested",
       "bookedAt": "2026-08-21T03:06:25.559Z",
+      "learningGoal": "I need more practice working with React components.",
       "id": "ehAL87zhzMc"
+    },
+    {
+      "sessionId": 3,
+      "tuteeId": 2,
+      "status": "requested",
+      "bookedAt": "2026-08-28T23:07:07.495Z",
+      "learningGoal": "I need help understanding React components.",
+      "id": "tfapGjVUUl0"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
