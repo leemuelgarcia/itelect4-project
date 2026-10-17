@@ -1,3 +1,4 @@
+
 import {
   useMutation,
   useQuery,
@@ -6,25 +7,13 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import type {
-  ApiBooking,
-  ApiSession,
-} from "../types";
+import type { ApiBooking, ApiSession } from "../types";
 import type { BookingFormValues } from "../schemas/bookingSchema";
 
 import BookingStatus from "../components/BookingStatus";
-
-import {
-  createBooking,
-  fetchBookings,
-  fetchSessions,
-} from "../api/client";
-
-import {
-  bookingSchema,
-} from "../schemas/bookingSchema";
-
-import { tutee } from "../data/mockData";
+import { createBooking, fetchBookings, fetchSessions } from "../api/client";
+import { bookingSchema } from "../schemas/bookingSchema";
+import { useAuthStore } from "../store/authStore";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +21,7 @@ import { Label } from "@/components/ui/label";
 
 function BookingsPage() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
 
   const {
     register,
@@ -59,12 +49,8 @@ function BookingsPage() {
 
   const addBooking = useMutation({
     mutationFn: createBooking,
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["bookings"],
-      });
-
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["bookings"] });
       reset();
     },
   });
@@ -72,19 +58,12 @@ function BookingsPage() {
   const onSubmit = (values: BookingFormValues): void => {
     addBooking.mutate({
       sessionId: Number(values.sessionId),
-      tuteeId: tutee.id,
-      status: "requested",
-      bookedAt: new Date().toISOString(),
       learningGoal: values.learningGoal,
     });
   };
 
   if (bookingsQuery.isPending || sessionsQuery.isPending) {
-    return (
-      <div className="animate-pulse p-6">
-        Loading bookings...
-      </div>
-    );
+    return <div className="animate-pulse p-6">Loading bookings...</div>;
   }
 
   if (bookingsQuery.isError) {
@@ -112,15 +91,18 @@ function BookingsPage() {
         My Bookings
       </h2>
 
+      {!user && (
+        <p className="mb-4 text-sm text-red-700">
+          Your user session is missing. Please log in again.
+        </p>
+      )}
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="mb-6 space-y-4 rounded-lg bg-white p-5 shadow dark:bg-gray-800"
       >
         <div className="space-y-2">
-          <Label
-            htmlFor="sessionId"
-            className="text-gray-900 dark:text-white"
-          >
+          <Label htmlFor="sessionId" className="text-gray-900 dark:text-white">
             Tutoring Session
           </Label>
 
@@ -131,7 +113,6 @@ function BookingsPage() {
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
           >
             <option value="">Choose a tutoring session</option>
-
             {sessions.map((session) => (
               <option key={session.id} value={session.id}>
                 {session.title}
@@ -140,17 +121,12 @@ function BookingsPage() {
           </select>
 
           {errors.sessionId && (
-            <p className="text-sm text-red-600">
-              {errors.sessionId.message}
-            </p>
+            <p className="text-sm text-red-600">{errors.sessionId.message}</p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label
-            htmlFor="learningGoal"
-            className="text-gray-900 dark:text-white"
-          >
+          <Label htmlFor="learningGoal" className="text-gray-900 dark:text-white">
             Learning Goal
           </Label>
 
@@ -162,19 +138,12 @@ function BookingsPage() {
           />
 
           {errors.learningGoal && (
-            <p className="text-sm text-red-600">
-              {errors.learningGoal.message}
-            </p>
+            <p className="text-sm text-red-600">{errors.learningGoal.message}</p>
           )}
         </div>
 
-        <Button
-          type="submit"
-          disabled={addBooking.isPending}
-        >
-          {addBooking.isPending
-            ? "Booking..."
-            : "Book Session"}
+        <Button type="submit" disabled={addBooking.isPending || !user}>
+          {addBooking.isPending ? "Booking..." : "Book Session"}
         </Button>
       </form>
 
@@ -184,13 +153,15 @@ function BookingsPage() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {bookings
-          .filter((booking) => booking.tuteeId === tutee.id)
-          .map((booking) => {
+      {bookings.length === 0 ? (
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          You don't have any bookings yet.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {bookings.map((booking) => {
             const session = sessions.find(
-              (item) =>
-                Number(item.id) === booking.sessionId
+              (item) => Number(item.id) === Number(booking.sessionId)
             );
 
             return (
@@ -199,7 +170,7 @@ function BookingsPage() {
                 className="rounded-lg bg-white p-5 shadow dark:bg-gray-800"
               >
                 <h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
-                  {session?.title ?? "Unknown Session"}
+                  {session?.title ?? `Session ${booking.sessionId}`}
                 </h3>
 
                 <p className="mb-2 text-sm text-gray-600 dark:text-gray-300">
@@ -207,14 +178,15 @@ function BookingsPage() {
                 </p>
 
                 <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
-  Learning goal: {booking.learningGoal}
-</p>
+                  Learning goal: {booking.learningGoal}
+                </p>
 
                 <BookingStatus status={booking.status} />
               </div>
             );
           })}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
