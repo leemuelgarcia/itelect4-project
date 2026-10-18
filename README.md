@@ -16,7 +16,7 @@ This project was developed for ITELECT4 and demonstrates TypeScript, React routi
 - Form validation with visible error messages
 - Persistent authentication state
 - Persistent dark mode preference
-- JSON Server REST API
+- REST API served by the Express and MongoDB backend
 - Typed API queries and mutations
 - Responsive user interface
 
@@ -28,7 +28,7 @@ This project was developed for ITELECT4 and demonstrates TypeScript, React routi
 - React Router
 - Zustand
 - TanStack Query
-- JSON Server
+- Express, Mongoose and MongoDB Atlas (separate backend repository)
 - React Hook Form
 - Zod
 - Shadcn UI
@@ -42,21 +42,15 @@ This project was developed for ITELECT4 and demonstrates TypeScript, React routi
 npm install
 ```
 
-### 2. Start the JSON Server API
+### 2. Configure the API address
 
-Open a terminal and run:
+The frontend talks to the backend API through the `VITE_API_URL` environment variable. Copy the example file, then set the value to the backend's address, with no trailing slash and no `/api` on the end:
 
 ```bash
-npm run api
+cp .env.example .env
 ```
 
-The API runs at:
-
-```text
-http://localhost:3001
-```
-
-Keep this terminal running.
+For the deployed backend, use `https://itelect4-backend-sable.vercel.app`. Restart `npm run dev` after changing `.env`.
 
 ### 3. Start the frontend
 
@@ -74,9 +68,7 @@ http://localhost:5173
 
 ## Login
 
-Enter a non-empty name on the Login page to access the application.
-
-Authentication state is managed using Zustand and is persisted in browser storage.
+Create an account on the Register page, or sign in on the Login page. The backend signs a token on login, and the frontend sends it as a Bearer header on private requests. Authentication state is managed with Zustand and persisted in browser storage.
 
 ## Main Pages
 
@@ -86,7 +78,7 @@ Displays an overview of the tutoring platform and booking information.
 
 ### Sessions
 
-Displays tutoring sessions retrieved from the JSON Server API.
+Displays tutoring sessions retrieved from the backend API.
 
 Users can search through the available sessions and open an individual session page.
 
@@ -120,7 +112,7 @@ TanStack Query is used for API data fetching and caching.
 
 The application uses typed queries for tutoring sessions and bookings.
 
-Creating a booking uses a mutation that sends a POST request to the JSON Server API and invalidates the bookings query after a successful request.
+Creating a booking uses a mutation that sends an authenticated POST request to the backend API and invalidates the bookings query after a successful request.
 
 All API requests are centralized in:
 

@@ -8,9 +8,11 @@ import {
   fetchBookings,
   fetchSessions,
 } from "../api/client";
-import { tutee } from "../data/mockData";
+import { useAuthStore } from "../store/authStore";
 
 function DashboardPage() {
+  const user = useAuthStore((state) => state.user);
+
   const sessionsQuery = useQuery<ApiSession[]>({
     queryKey: ["sessions"],
     queryFn: fetchSessions,
@@ -47,9 +49,8 @@ function DashboardPage() {
 
   const sessions = sessionsQuery.data;
 
-  const bookings = bookingsQuery.data.filter(
-    (booking) => booking.tuteeId === tutee.id
-  );
+  // The API already returns only the logged-in user's bookings.
+  const bookings = bookingsQuery.data;
 
   const requestedCount = bookings.filter(
     (booking) => booking.status === "requested"
@@ -71,7 +72,7 @@ function DashboardPage() {
         </h2>
 
         <p className="mt-1 text-gray-600 dark:text-gray-300">
-          Welcome, {tutee.name}.
+          Welcome, {user?.name ?? "there"}.
         </p>
       </div>
 

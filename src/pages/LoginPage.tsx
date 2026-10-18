@@ -1,29 +1,44 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { useAuthStore } from "../store/authStore";
+import { loginUser } from "../api/client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 function LoginPage() {
-  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
 
-  const handleLogin = (
+  const handleLogin = async (
     event: React.FormEvent<HTMLFormElement>
-  ): void => {
+  ): Promise<void> => {
     event.preventDefault();
+    setError("");
+    setLoading(true);
 
-    if (!name.trim()) {
-      return;
+    try {
+      // request() throws the API's own message when it refuses.
+      const data = await loginUser({ email, password });
+
+      login(data.token, data.user);
+      navigate("/");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to connect to the server."
+      );
+    } finally {
+      setLoading(false);
     }
-
-    login(name.trim());
-    navigate("/");
   };
 
   return (
@@ -39,32 +54,54 @@ function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
-            <Label
-              htmlFor="name"
-              className="text-gray-900 dark:text-white"
-            >
-              Name
+            <Label htmlFor="email" className="text-gray-900 dark:text-white">
+              Email
             </Label>
-
             <Input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(event) =>
-                setName(event.target.value)
-              }
-              placeholder="Enter your name"
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Enter your email"
+              required
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-gray-900 dark:text-white">
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          {error && (
+            <p role="alert" className="text-sm text-red-600">
+              {error}
+            </p>
+          )}
+
           <Button
             type="submit"
-            disabled={name.trim() === ""}
+            disabled={!email.trim() || !password || loading}
             className="w-full"
           >
-            Login
+            {loading ? "Signing in..." : "Login"}
           </Button>
         </form>
+
+        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
+          No account yet?{" "}
+          <Link to="/register" className="font-medium underline">
+            Register
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -108,13 +108,39 @@ export type RoleCount = Record<"tutor" | "tutee", number>;
 
 export type BookingStatus = "requested" | "confirmed" | "completed";
 
+// ===== API TYPES (what the backend actually sends) =====
+
 export type ApiSession = Omit<Session, "id"> & {
   id: string;
 };
 
-export type ApiBooking = Omit<Booking, "id" | "bookedAt"> & {
+// The API stores tuteeId as the user's id string, and sends bookedAt
+// as an ISO string, so both differ from the Booking interface.
+export type ApiBooking = Omit<Booking, "id" | "tuteeId" | "bookedAt"> & {
   id: string;
+  tuteeId: string;
   bookedAt: string;
 };
 
-export type NewBooking = Omit<ApiBooking, "id">;
+export type NewBooking = {
+  sessionId: number;
+  learningGoal: string;
+};
+
+// The API sends the user's id as a string.
+export type ApiUser = Omit<User, "id"> & {
+  id: string;
+};
+
+// POST /api/auth/login
+export type AuthReply = {
+  message: string;
+  token: string;
+  user: ApiUser;
+};
+
+// POST /api/auth/register
+export type RegisterReply = {
+  message: string;
+  user: ApiUser;
+};

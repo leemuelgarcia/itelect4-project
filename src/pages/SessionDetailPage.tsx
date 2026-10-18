@@ -4,7 +4,6 @@ import { Link, useParams } from "react-router";
 import type { ApiSession } from "../types";
 import SessionCard from "../components/SessionCard";
 import { fetchSessionById } from "../api/client";
-import { tutor } from "../data/mockData";
 
 function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -52,20 +51,6 @@ function SessionDetailPage() {
       </div>
 
       <SessionCard session={data} />
-
-      <div className="mt-6 rounded-lg bg-white p-5 shadow dark:bg-gray-800">
-        <h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
-          Tutor
-        </h3>
-
-        <p className="text-gray-700 dark:text-gray-300">
-          {tutor.name}
-        </p>
-
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {tutor.email}
-        </p>
-      </div>
     </div>
   );
 }
