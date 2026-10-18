@@ -4,6 +4,13 @@ A React and TypeScript web application for browsing tutoring sessions and managi
 
 This project was developed for ITELECT4 and demonstrates TypeScript, React routing, state management, API data fetching, form validation, and reusable UI components.
 
+## Live deployment
+
+- Live frontend: https://itelect4-project-gamma.vercel.app
+- Live backend API: https://itelect4-backend-sable.vercel.app
+- Backend health check: https://itelect4-backend-sable.vercel.app/api/health
+- Backend repository: https://github.com/leemuelgarcia/itelect4-backend
+
 ## Features
 
 - User login with protected routes
