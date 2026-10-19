@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ReviewPage from "./pages/ReviewPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import SessionsPage from "./pages/SessionsPage";
 import SessionDetailPage from "./pages/SessionDetailPage";
@@ -23,6 +24,9 @@ function App() {
           <Route path="sessions" element={<SessionsPage />} />
           <Route path="sessions/:id" element={<SessionDetailPage />} />
           <Route path="bookings" element={<BookingsPage />} />
+          {/* GT5: behind the same guard -- the API refuses it without a
+              token anyway, so the page should not offer it. */}
+          <Route path="review" element={<ReviewPage />} />
         </Route>
       </Route>
 
