@@ -105,6 +105,10 @@ The booking form requires:
 
 Invalid form submissions display validation messages and do not send a POST request to the API.
 
+### AI Coach
+
+A private page where a student describes what they want to learn and gets feedback from Gemini through the backend's `POST /api/ai`: a clarity rating, a summary, topics to focus on and steps to prepare. The form is validated with React Hook Form and Zod, the request goes through `useMutation`, and the browser never talks to Gemini directly.
+
 ## State Management
 
 The project uses Zustand for application state.
