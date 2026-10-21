@@ -144,3 +144,14 @@ export type RegisterReply = {
   message: string;
   user: ApiUser;
 };
+
+// ===== GT5: what POST /api/ai sends back ===============================
+// Copied by hand from itelect4-backend's Review type, which is derived
+// from a Zod schema in src/schemas/review.ts. This has to say the same
+// thing. Nothing checks that they agree -- you do.
+export interface AiReview {
+  summary: string;
+  topics: string[];
+  prepSteps: string[];
+  clarity: "clear" | "needs-detail" | "too-vague";
+}

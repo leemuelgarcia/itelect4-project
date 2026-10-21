@@ -1,4 +1,5 @@
 import type {
+  AiReview,
   ApiBooking,
   ApiSession,
   ApiUser,
@@ -103,3 +104,14 @@ export function loginUser(body: {
 }
 
 export type { ApiUser };
+
+// ===== GT5: one more private call ======================================
+// ---- ai: private, like bookings. The token goes on automatically,
+// which matters more here than anywhere: without it, anyone could
+// spend your Gemini quota.
+export function askAi(prompt: string): Promise<AiReview> {
+  return request<AiReview>("/api/ai", {
+    method: "POST",
+    body: JSON.stringify({ prompt }),
+  });
+}

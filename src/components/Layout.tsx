@@ -52,6 +52,18 @@ function Layout() {
               >
                 Bookings
               </NavLink>
+
+              {/* GT5: the one page that talks to Gemini */}
+              <NavLink
+                to="/review"
+                className={({ isActive }) =>
+                  isActive
+                    ? "font-bold text-blue-600"
+                    : "text-gray-700 dark:text-gray-300"
+                }
+              >
+                AI Coach
+              </NavLink>
             </div>
 
             <div className="flex gap-2">
