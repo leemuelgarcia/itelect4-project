@@ -1,5 +1,7 @@
 # Peer Tutoring Booking Platform
 
+[![CI](https://github.com/leemuelgarcia/itelect4-project/actions/workflows/ci.yml/badge.svg)](https://github.com/leemuelgarcia/itelect4-project/actions/workflows/ci.yml)
+
 A React and TypeScript web application for browsing tutoring sessions and managing tutoring bookings.
 
 This project was developed for ITELECT4 and demonstrates TypeScript, React routing, state management, API data fetching, form validation, and reusable UI components.
@@ -11,6 +13,21 @@ This project was developed for ITELECT4 and demonstrates TypeScript, React routi
 - Backend health check: https://itelect4-backend-sable.vercel.app/api/health
 - Backend repository: https://github.com/leemuelgarcia/itelect4-backend
 
+## Architecture
+
+```mermaid
+flowchart LR
+  fe["itelect4-project<br/>React + Vite on Vercel"]
+  be["itelect4-backend<br/>Express on Vercel"]
+  db[("MongoDB Atlas")]
+  ai["Gemini API"]
+  fe -- "fetch + Bearer token" --> be
+  be -- "Mongoose" --> db
+  be -- "GEMINI_API_KEY" --> ai
+```
+
+The browser only ever talks to the backend. The Gemini key lives on the server and is never sent to the browser.
+
 ## Features
 
 - User login with protected routes
@@ -20,6 +37,7 @@ This project was developed for ITELECT4 and demonstrates TypeScript, React routi
 - Create tutoring bookings
 - View booking status
 - Add a learning goal when booking a session
+- AI Coach: describe what you want to learn and get a clarity rating, a summary, topics and preparation steps from Gemini
 - Form validation with visible error messages
 - Persistent authentication state
 - Persistent dark mode preference
@@ -163,6 +181,14 @@ The project currently uses reusable:
 
 components across multiple pages.
 
+## Tests
+
+```bash
+npm test
+```
+
+Vitest runs in a pretend browser page (jsdom) with Testing Library: `SessionCard.test.tsx` checks the exact text a session card shows, `useToggle.test.ts` checks a hook's starting value and that it flips inside `act()`, and `ReviewPage.test.tsx` checks the AI Coach form refuses a too-short description with the schema's exact message and sends no request. GitHub Actions (`.github/workflows/ci.yml`) runs lint, the tests and the build on every push.
+
 ## Production Build
 
 To verify that the project compiles with TypeScript and builds successfully, run:
@@ -210,3 +236,7 @@ Implemented React Hook Form, Zod validation, schema-derived TypeScript types, cu
 ## Repository
 
 This repository contains the frontend implementation of the Peer Tutoring Booking Platform for ITELECT4.
+
+## AI-use disclosure
+
+I used an AI assistant (Claude, by Anthropic) while building this project. It helped write and explain code, tests, the CI workflow and this README across the GT4 to GT6 work. I ran, tested and deployed everything myself. The app also calls Google's Gemini model at runtime, through the backend's `POST /api/ai`.

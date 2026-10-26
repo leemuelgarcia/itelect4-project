@@ -9,5 +9,8 @@ export function usePrevious<T>(
     ref.current = value;
   }, [value]);
 
+  // Returning the ref's value during render is how this hook hands back the
+  // PREVIOUS value: the effect above only updates it after the render.
+  // eslint-disable-next-line react-hooks/refs
   return ref.current;
 }
